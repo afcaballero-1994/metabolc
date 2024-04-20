@@ -3,6 +3,10 @@
 #include <string.h>
 #include "mathV.h"
 
+typedef struct metaball{
+    Vec2 center;
+    f32 s;
+}Metaball;
 
 int main() {
 
@@ -29,6 +33,11 @@ int main() {
     int y = 0;
     SDL_Surface *ss = SDL_CreateRGBSurfaceFrom(img, width, height, 32, width * 4, 0,0,0, 0);
 
+    Metaball balls[3];
+
+    balls[0].center = (Vec2){300, 300};
+    balls[1].center = (Vec2){450, 365};
+    balls[2].center = (Vec2){600, 200};
     Vec2 ball = {300, 300};
     Vec2 ball2 = {800, 365};
 
@@ -43,24 +52,32 @@ int main() {
         }
         for(u32 j = 0; j < height; j++){
             for(u32 i = 0; i < width; i++){
-                Vec2 p = subVec2((Vec2){i,j}, ball);
-                Vec2 p2 = subVec2((Vec2){i,j}, ball2);
+//                Vec2 p = subVec2((Vec2){i,j}, ball);
+//                Vec2 p2 = subVec2((Vec2){i,j}, ball2);
+//
+//                f32 s1 = 1.0f / sqrlLen(p);
+//                f32 s2 = 1.0f / sqrlLen(p2);
+//                f32 s = s1 + s2;
+                f32 sum = 0;
+                for(u8 px = 0; px < 3; px++){
+                    Vec2 p = subVec2((Vec2){i,j}, balls[px].center);
+                    balls[px].s = 1.0f / sqrlLen(p);
+                    sum += balls[px].s;
+                    //amatista = 147, 104, 183
+                    //uranian blue = 166, 217, 247
+                    u8 r = lerpf(147, 166, balls[px].s / sum);
+                    u8 g = lerpf(104, 217, balls[px].s / sum);
+                    u8 b = lerpf(183, 247, balls[px].s / sum);
 
-                f32 s1 = 1.0f / sqrlLen(p);
-                f32 s2 = 1.0f / sqrlLen(p2);
-                f32 s = s1 + s2;
-
-                //amatista = 147, 104, 183
-                //uranian blue = 166, 217, 247
-                u8 r = lerpf(147, 166, s1/s);
-                u8 g = lerpf(104, 217, s1/s);
-                u8 b = lerpf(183, 247, s1/s);
-
-                if( s >= 0.00005f){
-                    img[j * width + i] = SDL_MapRGBA(ss->format, r, g, b ,255);
-                } else{
-                    img[j * width + i] = SDL_MapRGBA(ss->format, 39, 39, 39 ,255);
+                    if( sum >= 0.00005f){
+                        img[j * width + i] = SDL_MapRGBA(ss->format, r, g, b ,255);
+                    } else{
+                        img[j * width + i] = SDL_MapRGBA(ss->format, 39, 39, 39 ,255);
+                    }
                 }
+
+
+
 
             }
         }
