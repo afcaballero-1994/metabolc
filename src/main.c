@@ -27,6 +27,7 @@ int main() {
 
 
     u32 img[width * height];
+    memset(img, 39, width * height * 4);
 
     bool isRunning = true;
     int x = 0;
@@ -35,31 +36,31 @@ int main() {
 
     Metaball balls[3];
 
-    balls[0].center = (Vec2){300, 300};
-    balls[1].center = (Vec2){450, 365};
-    balls[2].center = (Vec2){600, 200};
-    Vec2 ball = {300, 300};
-    Vec2 ball2 = {800, 365};
+    u8 count = 0;
+    u8 capacity = 3;
 
     while (isRunning){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE){
                 isRunning = false;
-            } else if(event.type == SDL_MOUSEMOTION){
+            } else if(event.type == SDL_MOUSEBUTTONDOWN){
+                count += 1;
+                if(count > capacity){
+                    count = 3;
+                }
                 SDL_GetMouseState(&x, &y);
+
+                balls[count -1].center = (Vec2){x, y};
+            } else if(event.key.keysym.sym == SDLK_c){
+                memset(img, 39, width * height * 4);
+                count = 0;
             }
         }
         for(u32 j = 0; j < height; j++){
             for(u32 i = 0; i < width; i++){
-//                Vec2 p = subVec2((Vec2){i,j}, ball);
-//                Vec2 p2 = subVec2((Vec2){i,j}, ball2);
-//
-//                f32 s1 = 1.0f / sqrlLen(p);
-//                f32 s2 = 1.0f / sqrlLen(p2);
-//                f32 s = s1 + s2;
                 f32 sum = 0;
-                for(u8 px = 0; px < 3; px++){
+                for(u8 px = 0; px < count; px++){
                     Vec2 p = subVec2((Vec2){i,j}, balls[px].center);
                     balls[px].s = 1.0f / sqrlLen(p);
                     sum += balls[px].s;
@@ -89,9 +90,6 @@ int main() {
         SDL_UpdateWindowSurface(window);
         SDL_RenderPresent(renderer);
     }
-
-    fprintf(stdout, "0x%X\n", ss->format->Rmask);
-    fprintf(stdout, "%f", lerpf(0.0f, 25.0f, 1.0f));
 
     SDL_FreeSurface(ss);
     SDL_DestroyRenderer(renderer);
