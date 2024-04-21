@@ -34,10 +34,9 @@ int main() {
     int y = 0;
     SDL_Surface *ss = SDL_CreateRGBSurfaceFrom(img, width, height, 32, width * 4, 0,0,0, 0);
 
-    Metaball balls[3];
-
     u8 count = 0;
-    u8 capacity = 3;
+    u8 capacity = 15;
+    Metaball balls[capacity];
 
     while (isRunning){
         SDL_Event event;
@@ -47,7 +46,7 @@ int main() {
             } else if(event.type == SDL_MOUSEBUTTONDOWN){
                 count += 1;
                 if(count > capacity){
-                    count = 3;
+                    count = capacity;
                 }
                 SDL_GetMouseState(&x, &y);
 
