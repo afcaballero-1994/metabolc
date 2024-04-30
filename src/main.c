@@ -5,6 +5,7 @@
 
 typedef struct metaball{
     Vec2 center;
+    f32 radius;
     f32 s;
 }Metaball;
 
@@ -60,8 +61,9 @@ int main() {
             for(u32 i = 0; i < width; i++){
                 f32 sum = 0;
                 for(u8 px = 0; px < count; px++){
+                    balls[px].radius = 150.f * (f32)(px + 1);
                     Vec2 p = subVec2((Vec2){i,j}, balls[px].center);
-                    balls[px].s = 1.0f / sqrlLen(p);
+                    balls[px].s = balls[px].radius / sqrlLen(p);
                     sum += balls[px].s;
                     //amatista = 147, 104, 183
                     //uranian blue = 166, 217, 247
@@ -69,7 +71,7 @@ int main() {
                     u8 g = lerpf(104, 217, balls[px].s / sum);
                     u8 b = lerpf(183, 247, balls[px].s / sum);
 
-                    if( sum >= 0.00005f){
+                    if( sum >= 0.5f){
                         img[j * width + i] = SDL_MapRGBA(ss->format, r, g, b ,255);
                     } else{
                         img[j * width + i] = SDL_MapRGBA(ss->format, 39, 39, 39 ,255);
